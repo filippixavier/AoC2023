@@ -53,5 +53,17 @@ pub fn first_star() -> Result<(), Box<dyn Error + 'static>> {
 }
 
 pub fn second_star() -> Result<(), Box<dyn Error + 'static>> {
-    unimplemented!("Star 2 not ready");
+    let games = get_input();
+    let mut total_power = 0;
+    for game in games.into_iter() {
+        let max_cubes = game.iter().fold([0; 3], |mut acc, el| {
+            acc[0] = acc[0].max(el[0]);
+            acc[1] = acc[1].max(el[1]);
+            acc[2] = acc[2].max(el[2]);
+            acc
+        });
+        total_power += max_cubes.into_iter().product::<usize>();
+    }
+    println!("The sum of the power of each sets is {}", total_power);
+    Ok(())
 }
