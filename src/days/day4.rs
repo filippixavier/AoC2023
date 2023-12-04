@@ -51,5 +51,25 @@ pub fn first_star() -> Result<(), Box<dyn Error + 'static>> {
 }
 
 pub fn second_star() -> Result<(), Box<dyn Error + 'static>> {
-    unimplemented!("Star 2 not ready");
+    let cards = get_input();
+    let end = cards.len();
+    let mut cards_count = vec![1; end];
+    for (index, (winning, scratched)) in cards.into_iter().enumerate() {
+        let won = scratched
+            .iter()
+            .filter(|value| winning.contains(value))
+            .count();
+        if won > 0 && index + 1 < end {
+            for i in index + 1..=(index + won).min(end - 1) {
+                cards_count[i] += cards_count[index];
+            }
+        }
+    }
+
+    println!(
+        "Ending up with a total of {:?} cards",
+        cards_count.iter().sum::<u32>()
+    );
+
+    Ok(())
 }
