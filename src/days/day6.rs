@@ -43,5 +43,28 @@ pub fn first_star() -> Result<(), Box<dyn Error + 'static>> {
 }
 
 pub fn second_star() -> Result<(), Box<dyn Error + 'static>> {
-    unimplemented!("Star 2 not ready");
+    let (times, distances) = get_input();
+    let real_time = times
+        .iter()
+        .map(|elem| elem.to_string())
+        .collect::<String>()
+        .parse::<usize>()
+        .unwrap();
+    let real_dist = distances
+        .iter()
+        .map(|elem| elem.to_string())
+        .collect::<String>()
+        .parse::<usize>()
+        .unwrap();
+    let mut total = 0;
+
+    for preparation in 1..real_time {
+        let traveled = (real_time - preparation) * preparation;
+        if traveled > real_dist {
+            total += 1;
+        }
+    }
+
+    println!("The amount of record breakers is {}", total);
+    Ok(())
 }
