@@ -38,10 +38,10 @@ pub fn first_star() -> Result<(), Box<dyn Error + 'static>> {
             break;
         }
         steps += 1;
-        let step = network.get(current_node).unwrap();
+        let child_node = network.get(current_node).unwrap();
         current_node = match *movement {
-            'L' => &step.0,
-            'R' => &step.1,
+            'L' => &child_node.0,
+            'R' => &child_node.1,
             _ => unreachable!(),
         }
     }
@@ -51,6 +51,51 @@ pub fn first_star() -> Result<(), Box<dyn Error + 'static>> {
     Ok(())
 }
 
+fn gcd(a: usize, b: usize) -> usize {
+    if b == 0 {
+        a
+    } else {
+        gcd(b, a % b)
+    }
+}
+
+fn lcm(values: &[usize]) -> usize {
+    let mut ans = values[0];
+    for value in values.iter().skip(1) {
+        ans = (ans * value) / gcd(ans.max(*value), ans.min(*value));
+    }
+    ans
+}
+
 pub fn second_star() -> Result<(), Box<dyn Error + 'static>> {
-    unimplemented!("Star 2 not ready");
+    let (movements, network) = get_input();
+    let loops_sizes = network
+        .keys()
+        .filter_map(|start| {
+            if start.ends_with('A') {
+                let mut node = start;
+                for (steps, movement) in movements.iter().cycle().enumerate() {
+                    if node.ends_with('Z') {
+                        return Some(steps);
+                    }
+                    let childs = network.get(node).unwrap();
+                    node = match movement {
+                        'L' => &childs.0,
+                        'R' => &childs.1,
+                        _ => unreachable!(),
+                    }
+                }
+                None
+            } else {
+                None
+            }
+        })
+        .collect_vec();
+    let steps = lcm(&loops_sizes);
+    println!(
+        "👻 Reaching all Z-ending nodes at once in {:?} steps 👻",
+        steps
+    );
+
+    Ok(())
 }
