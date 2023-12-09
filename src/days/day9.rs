@@ -19,7 +19,7 @@ fn get_input() -> Vec<Vec<isize>> {
         .collect_vec()
 }
 
-fn predict_next(input: &[isize]) -> isize {
+fn predict(input: &[isize], previous: bool) -> isize {
     if input.iter().all(|&value| value == 0) {
         0
     } else {
@@ -27,7 +27,12 @@ fn predict_next(input: &[isize]) -> isize {
         for i in 1..input.len() {
             sub_input.push(input[i] - input[i - 1]);
         }
-        input.last().unwrap() + predict_next(&sub_input)
+        let prediction = predict(&sub_input, previous);
+        if previous {
+            input[0] - prediction
+        } else {
+            input.last().unwrap() + prediction
+        }
     }
 }
 
@@ -36,7 +41,7 @@ pub fn first_star() -> Result<(), Box<dyn Error + 'static>> {
 
     let predicted = readings
         .iter()
-        .map(|input| predict_next(input))
+        .map(|input| predict(input, false))
         .collect_vec();
 
     println!(
@@ -48,5 +53,17 @@ pub fn first_star() -> Result<(), Box<dyn Error + 'static>> {
 }
 
 pub fn second_star() -> Result<(), Box<dyn Error + 'static>> {
-    unimplemented!("Star 2 not ready");
+    let readings = get_input();
+
+    let predicted = readings
+        .iter()
+        .map(|input| predict(input, true))
+        .collect_vec();
+
+    println!(
+        "The sum of all previous inputs in the history is: {}",
+        predicted.iter().sum::<isize>()
+    );
+
+    Ok(())
 }
