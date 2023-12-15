@@ -190,7 +190,7 @@ pub fn second_star() -> Result<(), Box<dyn Error + 'static>> {
 
     println!(
         "After 1 000 000 000 cycles, the total load of the north support beam is {}",
-        repetiting_weights[((1_000_000_000 - repetition_start) % repetiting_weights.len()) - 1] // I have no idea why the off by one
+        repetiting_weights[(999_999_999 - repetition_start) % repetiting_weights.len()] // We count cycle 0, 0..=999_999_999 is 1 000 000 000 cycle, here is my off by one :D
     );
 
     Ok(())
