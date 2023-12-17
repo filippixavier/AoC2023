@@ -53,7 +53,13 @@ fn get_neighbors(
     neighbors
 }
 
-fn least_heat(map: &HeatMap, start: Coordinate, end: Coordinate, max_straight: usize) -> usize {
+fn least_heat(
+    map: &HeatMap,
+    start: Coordinate,
+    end: Coordinate,
+    min_straight: usize,
+    max_straight: usize,
+) -> usize {
     let (height, width) = (map.len(), map[0].len());
     let mut to_visit: Vec<_> = get_neighbors(start, Right, width, height)
         .into_iter()
@@ -68,12 +74,14 @@ fn least_heat(map: &HeatMap, start: Coordinate, end: Coordinate, max_straight: u
         to_visit.sort_unstable_by(|tuple_a, tuple_b| tuple_b.1.cmp(&tuple_a.1));
         let (coord, total_heat, dir, steps) = to_visit.pop().unwrap();
 
-        if coord == end {
+        if coord == end && steps + 1 >= min_straight {
             break;
         }
 
         for (next_pos, next_dir) in get_neighbors(coord, dir, width, height) {
-            if next_dir == dir && steps + 1 == max_straight {
+            if (next_dir == dir && steps + 1 == max_straight)
+                || (next_dir != dir && steps + 1 < min_straight)
+            {
                 continue;
             }
             let next_heat = total_heat + map[next_pos.0][next_pos.1];
@@ -98,11 +106,17 @@ fn least_heat(map: &HeatMap, start: Coordinate, end: Coordinate, max_straight: u
 
 pub fn first_star() -> Result<(), Box<dyn Error + 'static>> {
     let map = get_input();
-    let minimal_heat = least_heat(&map, (0, 0), (map.len() - 1, map[0].len() - 1), 3);
-    println!("{}", minimal_heat);
+    let minimal_heat = least_heat(&map, (0, 0), (map.len() - 1, map[0].len() - 1), 0, 3);
+    println!("The minimal heat loss is {}", minimal_heat);
     Ok(())
 }
 
 pub fn second_star() -> Result<(), Box<dyn Error + 'static>> {
-    unimplemented!("Star 2 not ready");
+    let map = get_input();
+    let minimal_heat = least_heat(&map, (0, 0), (map.len() - 1, map[0].len() - 1), 4, 10);
+    println!(
+        "Using ultra crucibles, the minimal heat loss is {}",
+        minimal_heat
+    );
+    Ok(())
 }
